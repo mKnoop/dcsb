@@ -1,0 +1,27 @@
+#!/usr/bin/env php
+<?php
+
+require __DIR__.'/../vendor/autoload_runtime.php';
+
+use Dcsb\Dcsb\DependencyInjection\ConsoleExtension;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\DependencyInjection\AddConsoleCommandPass;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
+return static function() {
+    $container = new ContainerBuilder();
+    $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../src/Resources/Config'));
+    $loader->load('services.yaml');
+    $container->addCompilerPass(new AddConsoleCommandPass());
+
+    $container->registerExtension($extension = new ConsoleExtension());
+    $container->loadFromExtension($extension->getAlias());
+    $container->compile();
+
+    $app = new Application();
+    $app->setCommandLoader($container->get('console.command_loader'));
+
+    return $app;
+};
