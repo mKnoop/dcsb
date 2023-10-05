@@ -8,11 +8,12 @@ use Twig\Loader\FilesystemLoader;
 
 class StackFileBuilder
 {
-    public function buildStackFile(Filesystem $filesystem, string $stackName): void
+    public function buildStackFile(Filesystem $filesystem, bool $includeTraefik, string $stackName): void
     {
         $variables = [
             'stackName' => $stackName,
             'networkName' => $stackName . '-network',
+            'includeTraefik' => $includeTraefik,
             'composeVersion' => '3.9',
         ];
 

@@ -37,9 +37,11 @@ class InitCommand extends Command
         $outputDir = $input->getArgument('output-dir');
 
         $fileSystem = new Filesystem(new LocalFilesystemAdapter($outputDir));
-        $this->requirementsChecker->check($fileSystem);
+        #$this->requirementsChecker->check($fileSystem);
 
-        $this->stackFileBuilder->buildStackFile($fileSystem, $stackName = $input->getArgument('stackName'));
+        $includeTraefik = $io->confirm('Should the traefik reverse proxy be included?');
+
+        $this->stackFileBuilder->buildStackFile($fileSystem, $includeTraefik, $stackName = $input->getArgument('stackName'));
 
         $io->success("Project {$stackName} successfully created");
 
