@@ -4,7 +4,7 @@ version: "{{ composeVersion }}"
 networks:
     default:
         driver: bridge
-    {{ networkName }}-network:
+    {{ networkName }}:
         name: {{ networkName }}
         driver: bridge
 
@@ -33,3 +33,6 @@ x-common-keys-apps: &common-keys-apps
 
 ########################### SERVICES
 services:
+{% if includeTraefik %}
+{% include 'traefik.yaml.twig' %}
+{% endif %}
