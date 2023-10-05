@@ -4,3 +4,21 @@
         image: {{ service.imageName }}
         environment:
             <<: *default-tz-puid-pgid
+{% for port in service.publishedPorts %}
+{% if loop.first %}
+        ports:
+{% endif %}
+            - "{{ port }}"
+{% endfor %}
+{% if includeTraefik and service.webPort %}
+        labels:
+            - "traefik.enable=true"
+            ## HTTP Routers
+            - "traefik.http.routers.{{ service.name }}-rtr.entrypoints=https"
+            - "traefik.http.routers.{{ service.name }}-rtr.rule=Host(`{{ service.name }}.$DOMAIN`)"
+            ## Middlewares
+            - "traefik.http.routers.{{ service.name }}-rtr.middlewares=chain-auth@file"
+            ## HTTP Services
+            - "traefik.http.routers.{{ service.name }}-rtr.service={{ service.name }}-svc"
+            - "traefik.http.services.{{ service.name }}-svc.loadbalancer.server.port={{ service.webPort }}"
+{% endif %}
