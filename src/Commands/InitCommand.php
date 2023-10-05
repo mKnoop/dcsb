@@ -3,6 +3,7 @@
 namespace Dcsb\Dcsb\Commands;
 
 use Dcsb\Dcsb\Project\RequirementsChecker;
+use Dcsb\Dcsb\Project\Service\ServiceDtoFactory;
 use Dcsb\Dcsb\Project\StackFileBuilder;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
@@ -20,7 +21,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class InitCommand extends Command
 {
-    public function __construct(private RequirementsChecker $requirementsChecker, private StackFileBuilder $stackFileBuilder)
+    public function __construct(private RequirementsChecker $requirementsChecker, private StackFileBuilder $stackFileBuilder, private ServiceDtoFactory $serviceDtoFactory)
     {
         parent::__construct();
     }
@@ -37,14 +38,31 @@ class InitCommand extends Command
         $outputDir = $input->getArgument('output-dir');
 
         $fileSystem = new Filesystem(new LocalFilesystemAdapter($outputDir));
-        #$this->requirementsChecker->check($fileSystem);
+        $this->requirementsChecker->check($fileSystem);
 
         $includeTraefik = $io->confirm('Should the traefik reverse proxy be included?');
 
-        $this->stackFileBuilder->buildStackFile($fileSystem, $includeTraefik, $stackName = $input->getArgument('stackName'));
+        $services = $this->getAddedService($io);
+
+        $this->stackFileBuilder->buildStackFile(
+            $fileSystem,
+            $includeTraefik,
+            $stackName = $input->getArgument('stackName'),
+            $services
+        );
 
         $io->success("Project {$stackName} successfully created");
 
         return self::SUCCESS;
+    }
+
+    private function getAddedService(SymfonyStyle $io): array
+    {
+        $services = [];
+        while ($io->confirm('Did you want to add another service?')) {
+            $services[] = $this->serviceDtoFactory->createFromInput($io);
+        }
+
+        return $services;
     }
 }
