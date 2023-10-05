@@ -34,5 +34,13 @@ x-common-keys-apps: &common-keys-apps
 ########################### SERVICES
 services:
 {% if includeTraefik %}
+
 {% include 'traefik.yaml.twig' %}
+
 {% endif %}
+
+{% for service in services %}
+
+{% include 'service.yaml.twig' %}
+
+{% endfor %}

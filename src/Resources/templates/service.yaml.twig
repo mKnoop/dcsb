@@ -1,0 +1,6 @@
+{# @var service \Dcsb\Dcsb\Project\Service\ServiceDto #}
+    {{ service.name }}:
+        <<: *common-keys-media # See EXTENSION FIELDS at the top
+        image: {{ service.imageName }}
+        environment:
+            <<: *default-tz-puid-pgid
