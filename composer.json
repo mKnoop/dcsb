@@ -15,7 +15,9 @@
         "symfony/console": "7.0.x-dev",
         "symfony/dependency-injection": "7.0.x-dev",
         "symfony/config": "7.0.x-dev",
-        "symfony/yaml": "7.0.x-dev"
+        "symfony/yaml": "7.0.x-dev",
+        "league/flysystem": "3.x-dev",
+        "twig/twig": "3.x-dev"
     },
     "config": {
         "allow-plugins": {

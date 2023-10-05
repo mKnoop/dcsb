@@ -1,0 +1,35 @@
+version: "{{ composeVersion }}"
+
+########################### NETWORKS
+networks:
+    default:
+        driver: bridge
+    {{ networkName }}-network:
+        name: {{ networkName }}
+        driver: bridge
+
+########################### EXTENSION FIELDS
+# Common environment values
+x-environment: &default-tz-puid-pgid
+    TZ: $TZ
+    PUID: $PUID
+    PGID: $PGID
+
+# Keys common to some of the core services that we always to automatically restart on failure
+x-common-keys-core: &common-keys-core
+    networks:
+        - {{ networkName }}
+    security_opt:
+        - no-new-privileges:true
+    restart: always
+
+# Keys common to some of the dependent services/apps
+x-common-keys-apps: &common-keys-apps
+    networks:
+        - {{ networkName }}
+    security_opt:
+        - no-new-privileges:true
+    restart: unless-stopped
+
+########################### SERVICES
+services:
